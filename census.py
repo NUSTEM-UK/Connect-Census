@@ -36,7 +36,7 @@ def on_connect(client, userdata, flags, rc):
     """Callback for when mqtt client connects."""
     print("Connected with result code "+str(rc))
     # Just get the firehose
-    client.subscribe("#")
+    client.subscribe("#") # TODO: QoS setting
 
 def on_message(client, userdata, msg):
     """Callback for when mqtt client receives a message."""
@@ -45,6 +45,9 @@ def on_message(client, userdata, msg):
 
     if (msg.topic == "Connect/NUSTEM/MOOD"):
         # Act on mood
+        # TODO: Should we not just log this to a file, and rotate the logs?
+        #       Timestamped granularity vs. manual database snapshots.
+        #       Yes, but likely also do this, for JSON/AJAX purposes.
         print("Mood receive", payload)
         query_string = """
         INSERT INTO moods (mood_name, mood_count)
