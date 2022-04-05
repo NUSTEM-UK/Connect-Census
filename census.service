@@ -1,0 +1,14 @@
+[Unit]
+Description=Connect Census service
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 -u census.py
+WorkingDirectory=/home/jonathan/Connect-Census
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=jonathan
+
+[Install]
+WantedBy=multi-user.target

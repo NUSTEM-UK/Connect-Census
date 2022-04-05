@@ -20,4 +20,3 @@ CREATE TABLE IF NOT EXISTS moods (
     mood_name CHAR(8) NOT NULL UNIQUE,
     mood_count INT UNSIGNED
 );
-w
