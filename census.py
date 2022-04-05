@@ -2,6 +2,7 @@ import re
 import paho.mqtt.client as mqtt
 from datetime import datetime
 from MySQLdb import connect, Error
+from netaddr import *
 import config
 
 
@@ -22,14 +23,6 @@ def db_query(query_string):
     except Error as e:
         print("Database error: ", e)
         return None
-
-
-def mac_to_int(mac):
-    """Convert a MAC address to an integer."""
-    res = re.match('^((?:(?:[0-9a-f]{2}):){5}[0-9a-f]{2})$', mac.lower())
-    if res is None:
-        raise ValueError('invalid mac address')
-    return int(res.group(0).replace(':', ''), 16)
 
 
 def on_connect(client, userdata, flags, rc):
@@ -59,20 +52,34 @@ def on_message(client, userdata, msg):
             # Trigger the device watching function with the MAC address
             # i_see_you(msg.topic[17:29])
             now=datetime.now()
+            mac = EUI(msg.topic[17:29])
             query_string = """
-            INSERT INTO devices (mac_address, last_seen)
-            VALUES ('"""+mac_to_int(msg.topic[17:29])+"""', '"""+now.strftime("%Y-%m-%d %H:%M:%S")+"""')
+            INSERT INTO devices (mac_address, last_seen, pings)
+            VALUES ('"""+str(int(mac))+"""', '"""+now.strftime("%Y-%m-%d %H:%M:%S")+"""', 1)
             ON DUPLICATE KEY UPDATE
             last_seen = '"""+now.strftime("%Y-%m-%d %H:%M:%S")+"""',
-            ping_count = ping_count + 1;"""
+            pings = pings + 1;"""
+            db_query(query_string)
 
     elif (msg.topic.startswith("/management/to")):
-        device = mac_to_int(msg.topic[17:29])
+        device = int(EUI(msg.topic[17:29]))
         query_string = """
-        UPDATE devices SET flash_count = flash_count + 1
+        UPDATE devices SET times_flashed = times_flashed + 1
         WHERE mac_address = '"""+device+"""'
         """
         db_query(query_string)
+    elif ('msg.topic.startswith("Connect/NUSTEM/hello_my_name_is")'):
+        device = int(EUI(payload))
+        now = datetime.now()
+        # Update logins count
+        query_string = """
+        INSERT INTO devices (mac_address, logins, last_seen)
+        VALUES ('"""+str(device)+"""', 1, '"""+now.strftime("%Y-%m-%d %H:%M:%S")+"""')
+        ON DUPLICATE KEY UPDATE
+        logins = logins + 1,
+        last_seen = '"""+now.strftime("%Y-%m-%d %H:%M:%S")+"""';"""
+        db_query(query_string)
+        # TODO: handle days active here (separate query?) Or do we do this via MQTT logs?
     else:
         print("Unknown message: ", msg.topic, payload)
 
