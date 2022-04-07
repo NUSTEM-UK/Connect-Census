@@ -21,3 +21,10 @@ CREATE TABLE IF NOT EXISTS moods (
     mood_name CHAR(8) NOT NULL UNIQUE,
     mood_count INT UNSIGNED
 );
+
+CREATE TABLE IF NOT EXISTS params (
+    paramName VARCHAR(50) NOT NULL,
+    paramValue VARCHAR(100)
+);
+
+INSERT INTO params (paramName, paramValue) VALUES ('current_mood', 'HAPPY');
