@@ -8,7 +8,7 @@ import config
 
 def db_query(query_string):
     """Execute a database query."""
-    print(query_string)
+    # print(query_string)
     try:
         with connect(
             host="localhost",
