@@ -8,7 +8,7 @@ import config
 
 def db_query(query_string):
     """Execute a database query."""
-    # print(query_string)
+    print(query_string)
     try:
         with connect(
             host="localhost",
@@ -54,6 +54,11 @@ def on_message(client, userdata, msg):
         INSERT INTO moods (mood_name, mood_count)
         VALUES ('"""+payload+"""', 1)
         ON DUPLICATE KEY UPDATE mood_count = mood_count + 1;"""
+        db_query(query_string)
+        query_string = """
+        UPDATE params
+            SET paramValue = '"""+payload+"""'
+            WHERE paramName = 'current_mood';"""
         db_query(query_string)
     elif (msg.topic.startswith("/management/from")):
         if (payload == "255"):
