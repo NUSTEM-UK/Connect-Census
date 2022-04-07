@@ -7,3 +7,6 @@ mac2 = EUI(260561643171570)
 print (mac2)
 if mac == mac2:
 	print ("Match")
+# mac2.dialect = mac_unix_expanded
+print(str(mac2))
+# print(str(mac.dialect = mac_unix_expanded))

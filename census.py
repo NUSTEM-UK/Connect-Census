@@ -62,8 +62,8 @@ def on_message(client, userdata, msg):
             now=datetime.now()
             mac = EUI(msg.topic[17:29])
             query_string = """
-            INSERT INTO devices (mac_address, last_seen, pings)
-            VALUES ('"""+str(int(mac))+"""', '"""+now.strftime("%Y-%m-%d %H:%M:%S")+"""', 1)
+            INSERT INTO devices (mac_address, mac_string, last_seen, pings)
+            VALUES ('"""+str(int(mac))+"""', '""" + str(mac) + """', '"""+now.strftime("%Y-%m-%d %H:%M:%S")+"""', 1)
             ON DUPLICATE KEY UPDATE
             last_seen = '"""+now.strftime("%Y-%m-%d %H:%M:%S")+"""',
             pings = CASE
@@ -87,8 +87,8 @@ def on_message(client, userdata, msg):
         now = datetime.now()
         # Update logins count
         query_string = """
-        INSERT INTO devices (mac_address, logins, last_seen)
-        VALUES ('"""+str(device)+"""', 1, '"""+now.strftime("%Y-%m-%d %H:%M:%S")+"""')
+        INSERT INTO devices (mac_address, mac_string, logins, last_seen)
+        VALUES ('"""+str(device)+"""', '""" + str(EUI(payload)) + """', 1, '"""+now.strftime("%Y-%m-%d %H:%M:%S")+"""')
         ON DUPLICATE KEY UPDATE
         logins = CASE
                     WHEN logins IS NULL THEN 1
