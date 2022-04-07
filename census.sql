@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS devices (
     /*  Store mac_address as an int, convert it before/after passing.
         Needs to be 6 bytes, so BIGINT covvers us. */
     mac_address BIGINT UNSIGNED NOT NULL UNIQUE PRIMARY KEY,
+    mac_string CHAR(17),
     first_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     delivered_date TIMESTAMP,
     last_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
